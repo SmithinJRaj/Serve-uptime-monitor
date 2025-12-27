@@ -7,13 +7,15 @@ generator client {
 }
 
 model Service {
-  id        Int      @id @default(autoincrement())
-  name      String
-  url       String   @unique
-  status    String   @default("UP") // UP or DOWN
-  interval  Int      @default(60)   // Seconds
-  logs      Log[]
+  id            Int       @id @default(autoincrement())
+  name          String
+  url           String    @unique
+  status        String    @default("UP")
+  interval      Int       @default(60) // seconds
+  lastCheckedAt DateTime?
+  logs          Log[]
 }
+
 
 model Log {
   id           Int      @id @default(autoincrement())
