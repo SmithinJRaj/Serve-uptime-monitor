@@ -83,7 +83,7 @@ async function checkService(service: any) {
     verifying.add(service.id);
 
     try {
-      const isConfirmedDown = await verifyFailure(service.url, service.name); // pass serviceName for logging
+      const isConfirmedDown = await verifyFailure(service.url, service.name, service.status === 'DOWN');
 
       if (!isConfirmedDown) {
         await prisma.service.update({
