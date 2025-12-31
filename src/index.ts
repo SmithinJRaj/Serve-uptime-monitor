@@ -1,6 +1,6 @@
+import 'dotenv/config';
 import { sendDiscordAlert } from './alerts/discord.js';
 import { sendEmailAlert } from './alerts/email.js';
-import 'dotenv/config';
 import { prisma } from './lib/prisma.js';
 import axios from 'axios';
 import cron from 'node-cron';
@@ -10,6 +10,7 @@ import { getServiceStats } from './utils/analytics.js';
 console.log('🚀 Monitor process starting...');
 
 let isRunning = false;
+let overlapLogged = false;
 
 const verifying = new Set<number>(); // serviceId
 
@@ -132,11 +133,15 @@ async function checkService(service: any) {
 
 async function monitorServices() {
   if (isRunning) {
-    console.log('⏳ Monitor already running, skipping tick');
+    if (!overlapLogged) {
+      console.warn('⏳ Monitor already running, skipping ticks');
+      overlapLogged = true;
+    }
     return;
   }
 
   isRunning = true;
+  overlapLogged = false;
 
   try {
     const services = await prisma.service.findMany();
@@ -157,7 +162,6 @@ async function monitorServices() {
     isRunning = false;
   }
 }
-
 
 async function main() {
   await prisma.$connect();
