@@ -1,7 +1,11 @@
+console.log('BOOT STEP 1');
+
 import 'dotenv/config';
 import { sendDiscordAlert } from './alerts/discord.js';
 import { sendEmailAlert } from './alerts/email.js';
 import { prisma } from './lib/prisma.js';
+console.log('BOOT STEP 2 - prisma imported');
+
 import axios from 'axios';
 import cron from 'node-cron';
 import { verifyFailure } from './engine/checker.js';
@@ -165,8 +169,14 @@ async function monitorServices() {
 }
 
 async function main() {
-  await prisma.$connect();
-  console.log('✅ DB connected (once)');
+  console.log('BOOT STEP 3 - entering main');
+   try {
+    await prisma.$connect();
+    console.log('BOOT STEP 4 - db connected');
+  } catch (err) {
+    console.error('DB CONNECT FAILED:', err);
+    process.exit(1);
+  }
   cron.schedule('*/10 * * * * *', monitorServices);
 
   cron.schedule('0 9 * * 1', async () => { // Every Monday 9 AM
