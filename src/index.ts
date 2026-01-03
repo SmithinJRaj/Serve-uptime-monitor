@@ -6,6 +6,7 @@ import axios from 'axios';
 import cron from 'node-cron';
 import { verifyFailure } from './engine/checker.js';
 import { getServiceStats } from './utils/analytics.js';
+import http from 'http';
 
 console.log('🚀 Monitor process starting...');
 
@@ -190,4 +191,13 @@ async function main() {
 main().catch(err => {
   console.error(err);
   process.exit(1);
+});
+
+const PORT = process.env.PORT || 3000;
+
+http.createServer((_, res) => {
+  res.writeHead(200);
+  res.end('OK');
+}).listen(PORT, () => {
+  console.log(`Dummy server listening on ${PORT}`);
 });
