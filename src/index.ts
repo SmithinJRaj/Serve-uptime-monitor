@@ -5,7 +5,7 @@ import { sendDiscordAlert } from './alerts/discord.js';
 import { sendEmailAlert } from './alerts/email.js';
 import { prisma } from './lib/prisma.js';
 console.log('BOOT STEP 2 - prisma imported');
-
+import type { Service } from '@prisma/client';
 import axios from 'axios';
 import cron from 'node-cron';
 import { verifyFailure } from './engine/checker.js';
@@ -41,7 +41,7 @@ async function calculateDowntimeSeconds(serviceId: number): Promise<number> {
   return Math.floor((endTime - firstDown.createdAt.getTime()) / 1000);
 }
 
-async function checkService(service: any) {
+async function checkService(service: Service) {
   const start = Date.now();
 
   try {
@@ -152,7 +152,7 @@ async function monitorServices() {
     const services = await prisma.service.findMany();
     const now = Date.now();
 
-    const dueServices = services.filter(service => {
+    const dueServices = services.filter((service: Service) => {
       if (!service.lastCheckedAt) return true;
       return now - new Date(service.lastCheckedAt).getTime() >= service.interval * 1000;
     });
